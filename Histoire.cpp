@@ -73,7 +73,16 @@ vector<Histoire *> * extraireHistoires(const DocumentXML& a_document) {
     for( ; it < fin; ++ it ) {
         if( ( * it )->estElement() ) {
             Element * histoire = ( Element * )( * it );
-            Histoire * nouvelle = new Histoire( histoire->attribut( string( "titre" ) ) );
+
+            string titre = histoire->attribut( string( "titre" ) );
+
+            try {
+                titre += " (partie " + histoire->attribut( string( "partie" ) ) + ")";
+            } catch( AttributNonDefinie & a_e ) {
+                // rien
+            }
+
+            Histoire * nouvelle = new Histoire( titre );
 
             stringstream texte( histoire->texte() );
             stringstream accumulateur;

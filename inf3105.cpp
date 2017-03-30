@@ -1,7 +1,6 @@
 
 #include "DocumentXML.h"
 #include "Histoire.h"
-#include "arbreavl.h"
 
 #include <iomanip>
 #include <iostream>
@@ -37,16 +36,11 @@ vector< Histoire *> * lireDocuments( string a_nomFichier ) {
 
 
 int main() {
-    ArbreAVL<int> arbre;
-    arbre.inserer(5);
-    arbre.inserer(10);
-    arbre.inserer(6);
-    arbre.inserer(1);
     vector<Histoire *> * histoires = lireDocuments( string( "listeDocument.xml" ) );
 
     for( Histoire * histoire : * histoires ) {
-        cout << ( * histoire ) << endl << endl;
+        cout << ( * histoire ).titre() << endl << endl;
     }
-    cout << "Test.  " << arbre.hauteur() << endl;
+
 	return 0;
 }

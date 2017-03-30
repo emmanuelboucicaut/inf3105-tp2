@@ -1,0 +1,29 @@
+default namespace = ""
+
+start =
+  element magasine {
+    attribute annee { xsd:integer },
+    attribute editeur { text },
+    attribute editeur_consultant { text },
+    attribute mois { xsd:NCName },
+    attribute no { xsd:integer },
+    attribute proprietaire { text },
+    attribute titre { text },
+    attribute vol { xsd:NCName },
+    element contenus {
+      element histoire {
+        attribute auteur { text },
+        attribute page { xsd:integer },
+        attribute partie { xsd:integer }?,
+        attribute titre { text },
+        (text
+         | separation
+         | element chapitre {
+             attribute titre { text },
+             (text | separation)+
+           })+
+      }+
+    },
+    element license { text }
+  }
+separation = element separation { empty }

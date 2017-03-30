@@ -45,6 +45,21 @@ public :
 };
 
 
+class AttributNonDefinie : public exception
+{
+private :
+  string _nom;
+
+public :
+  AttributNonDefinie( void );
+  AttributNonDefinie( string a_nom );
+  AttributNonDefinie( const AttributNonDefinie & a_e );
+  virtual ~AttributNonDefinie( void );
+
+  virtual const char* what() const throw();
+};
+
+
 class Element : public Contenu {
 private :
 	string _nom;
@@ -65,7 +80,7 @@ public :
     string texte( void ) const;
 	Element * parent( void ) const;
 	string nom( void ) const;
-	string attribut( string a_nom ) const;
+	string attribut( string a_nom ) const throw( AttributNonDefinie );
 
     vector< Contenu * >::const_iterator begin( void ) const;
     vector< Contenu * >::const_iterator end( void ) const;

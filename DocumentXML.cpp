@@ -83,6 +83,26 @@ ostream & Texte::afficher( ostream & a_out ) const {
 }
 
 
+AttributNonDefinie::AttributNonDefinie( void ) :
+        _nom( "" )
+{}
+
+AttributNonDefinie::AttributNonDefinie( string a_nom ) :
+        _nom( a_nom )
+{}
+
+AttributNonDefinie::AttributNonDefinie( const AttributNonDefinie & a_e ) :
+        _nom( a_e._nom )
+{}
+
+AttributNonDefinie::~AttributNonDefinie( void )
+{}
+
+const char* AttributNonDefinie::what() const throw()
+{
+    return ( string( "L'attribut " ) + _nom + string( " n'est pas defini." ) ).c_str();
+}
+
 
 
 Element::Element(void) :
@@ -175,8 +195,17 @@ string Element::nom(void) const {
     return _nom;
 }
 
-string Element::attribut( string a_nom ) const {
-    return ( * ( _attributs.find( a_nom ) ) ).second;
+
+
+
+string Element::attribut( string a_nom ) const throw( AttributNonDefinie ) {
+    map< string, string >::const_iterator it = _attributs.find( a_nom );
+
+    if( it == _attributs.end() ) {
+        throw AttributNonDefinie( a_nom );
+    }
+
+    return ( * it ).second;
 }
 
 
