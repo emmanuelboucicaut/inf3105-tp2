@@ -1,8 +1,3 @@
-/*
-  INF3105 - Structures de données et algorithmes
-  Squelette pour Lab6 + TP2
-*/
-
 #if !defined(__ARBREAVL_H__)
 #define __ARBREAVL_H__
 
@@ -323,13 +318,16 @@ const T& ArbreAVL<T>::max(Noeud* n) const
 template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::debut() const
 {
-
+  if(*this != NULL){
     Iterateur iter(*this);
 
     while(iter.courant->gauche != NULL) {
         iter.chemin.empiler(iter.courant);
         iter.courant = iter.courant->gauche;
     }
+  }else{
+    cout << "OHHHHHHHHHHH" << endl;
+  }
 
     return iter;
 
@@ -548,5 +546,3 @@ typename ArbreAVL<T>::Iterateur& ArbreAVL<T>::Iterateur::operator = (const Itera
 }
 
 #endif
-
-
