@@ -8,6 +8,19 @@
 using namespace std;
 
 
+vector< Histoire *> * lireDocuments( string a_nomFichier );
+
+
+int main() {
+    vector<Histoire *> * histoires = lireDocuments( string( "listeDocument.xml" ) );
+
+    for( Histoire * histoire : * histoires ) {
+        cout << ( * histoire ).titre() << endl << endl;
+    }
+
+	return 0;
+}
+
 vector< Histoire *> * lireDocuments( string a_nomFichier ) {
     vector<Histoire *> * histoires = new vector< Histoire * >();
     DocumentXML * listeFichiers = lireFichierXML( a_nomFichier );
@@ -32,15 +45,4 @@ vector< Histoire *> * lireDocuments( string a_nomFichier ) {
     }
 
     return histoires;
-}
-
-
-int main() {
-    vector<Histoire *> * histoires = lireDocuments( string( "listeDocument.xml" ) );
-
-    for( Histoire * histoire : * histoires ) {
-        cout << ( * histoire ).titre() << endl << endl;
-    }
-
-	return 0;
 }
