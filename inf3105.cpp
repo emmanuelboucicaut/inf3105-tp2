@@ -21,13 +21,15 @@ int main() {
 	return 0;
 }
 
+/************************************************
+ *                    FONCTIONS                 *
+ ***********************************************/
+
 vector< Histoire *> * lireDocuments( string a_nomFichier ) {
     vector<Histoire *> * histoires = new vector< Histoire * >();
     DocumentXML * listeFichiers = lireFichierXML( a_nomFichier );
-
     Element * courrant = listeFichiers->racine();
     vector< Contenu * >::const_iterator it = courrant->begin();
-
     // trouver <liste>
     while( ! ( * it )->estElement() ) ++ it;
     courrant = ( Element * )( * it );
@@ -35,11 +37,8 @@ vector< Histoire *> * lireDocuments( string a_nomFichier ) {
     for( Contenu * contenu : * courrant ) {
         if( contenu->estElement() ) {
             Element * element = ( Element * )contenu;
-
             DocumentXML * doc = lireFichierXML( element->attribut( string( "fichier" ) ) );
-
             vector<Histoire *> * h = extraireHistoires( * doc );
-
             histoires->insert( histoires->end(), h->begin(), h->end() );
         }
     }
