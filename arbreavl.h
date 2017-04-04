@@ -208,10 +208,11 @@ void ArbreAVL<T>::rotationDroiteGauche(Noeud*& racinesousarbre)
 template <class T>
 bool ArbreAVL<T>::vide() const
 {
+    bool vide = false;
     if(racine == NULL){
-        return true;
+        vide = true;
     }
-    return true;
+    return vide;
 }
 
 template <class T>
@@ -301,9 +302,11 @@ template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::debut() const
 {
     Iterateur iter(*this);
-    while(iter.courant->gauche != NULL){
-        iter.chemin.empiler(iter.courant->gauche);
-        iter.courant = iter.courant;
+    iter.courant = iter.arbre_associe.racine;
+
+    while(iter.courant != NULL && iter.courant->gauche != NULL){
+        iter.chemin.empiler(iter.courant);
+        iter.courant = iter.courant->gauche;
     }
     return iter;
 }
@@ -311,7 +314,14 @@ typename ArbreAVL<T>::Iterateur ArbreAVL<T>::debut() const
 template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::fin() const
 {
-    return Iterateur(*this);
+    Iterateur iter(*this);
+    iter.courant = iter.arbre_associe.racine;
+
+    while(iter.courant != NULL && iter.courant->droite != NULL){
+        iter.chemin.empiler(iter.courant->droite);
+        iter.courant = iter.courant->droite;
+    }
+    return iter;
 }
 
 template <class T>
@@ -399,11 +409,29 @@ ArbreAVL<T>::Iterateur::Iterateur(const ArbreAVL<T>::Iterateur& a)
 template <class T>
 typename ArbreAVL<T>::Iterateur& ArbreAVL<T>::Iterateur::operator++()
 {
-    T valeur;
-    valeur = this->courant->contenu;
+
+    T temp;
+
+    temp = this->courant->contenu;
+
+    if(this->courant->droite == NULL){
+
+        while(this->courant->contenu <= temp){
+            if(!this->chemin.vide()){
+                this->courant = this->chemin.depiler();
+            }
+        }
+    }else if(this->courant->droite != NULL){
+
+            this->chemin.empiler(this->courant);
+            this->courant = this->courant->droite;
+            while(this->courant->gauche != NULL){
+                this->chemin.empiler(this->courant);
+                this->courant = this->courant->gauche;
+            }
+    }
     return *this;
 }
-
 // Post-incrément
 template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::Iterateur::operator++(int)

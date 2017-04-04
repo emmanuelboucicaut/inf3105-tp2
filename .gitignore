@@ -2,3 +2,5 @@ a.out
 *.xml
 test*
 arbretest*
+*.o
+tp2
