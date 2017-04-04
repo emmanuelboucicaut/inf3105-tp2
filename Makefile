@@ -10,6 +10,6 @@ DocumentXML.o: DocumentXML.cpp DocumentXML.h
 Histoire.o: Histoire.cpp Histoire.h
 	$(COMPILER) $(CXXFLAGS) $(FLAGS) -c -o Histoire.o Histoire.cpp
 clean:
-	rm f *.o
+	rm -f *.o
 	rm -f tp2
 	clear
