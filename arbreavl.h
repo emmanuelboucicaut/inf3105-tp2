@@ -214,7 +214,6 @@ bool ArbreAVL<T>::vide() const
     }
     return vide;
 }
-
 template <class T>
 void ArbreAVL<T>::vider(){
   vider(racine);
@@ -227,7 +226,7 @@ void ArbreAVL<T>::vider(Noeud*& noeud)
         vider(noeud->gauche);
         vider(noeud->droite);
         delete noeud;
-        //noeud = NULL;
+        noeud = NULL;
     }
 
 }
@@ -235,6 +234,14 @@ void ArbreAVL<T>::vider(Noeud*& noeud)
 template <class T>
 void ArbreAVL<T>::copier(const Noeud* source, Noeud*& noeud) const
 {
+
+    if (source != NULL){
+        noeud = new Noeud (source->contenu);
+        noeud->equilibre = source->equilibre;
+        copier(source->droite, noeud->droite);
+        copier(source->gauche, noeud->gauche);
+      }
+      /**
     if(source != NULL){
         noeud = new Noeud(source->contenu);
         noeud->equilibre = source->equilibre;
@@ -245,6 +252,7 @@ void ArbreAVL<T>::copier(const Noeud* source, Noeud*& noeud) const
             copier(source->droite, noeud->droite);
         }
     }
+    **/
 }
 
 template <class T>
@@ -409,9 +417,20 @@ ArbreAVL<T>::Iterateur::Iterateur(const ArbreAVL<T>::Iterateur& a)
 template <class T>
 typename ArbreAVL<T>::Iterateur& ArbreAVL<T>::Iterateur::operator++()
 {
-
+    if (courant->droite == NULL){
+     if (!chemin.vide()) courant = chemin.depiler();
+   }
+   else {
+     courant = courant->droite;
+     while (courant->gauche != NULL){
+         chemin.empiler(courant);
+         courant = courant->gauche;
+     }
+   }
+   return *this;
+}
+/**
     T temp;
-
     temp = this->courant->contenu;
 
     if(this->courant->droite == NULL){
@@ -430,8 +449,10 @@ typename ArbreAVL<T>::Iterateur& ArbreAVL<T>::Iterateur::operator++()
                 this->courant = this->courant->gauche;
             }
     }
+
     return *this;
 }
+**/
 // Post-incrément
 template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::Iterateur::operator++(int)
