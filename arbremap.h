@@ -9,26 +9,42 @@
 #include "arbreavl.h"
 
 template <class K, class V>
-class ArbreMap
-{
-  class Entree
-  {
-    public:
-      Entree(const K& c):cle(c),valeur(){}
-      K cle;
-      V valeur;
-      bool operator< (const Entree& e) const {return cle < e.cle;}
-  };
+class ArbreMap{
+    class Entree{
+        public:
+            Entree(const K& c):cle(c),valeur(){}
+            K cle;
+            V valeur;
+            bool operator< (const Entree& e) const {return cle < e.cle;}
+            bool operator> (const Entree& e) const {return cle > e.cle;}
+            bool operator== (const Entree& e) const {return cle == e.cle;}
+    };
     ArbreAVL<Entree> entrees;
   public:
-    bool contient(const K&) const;
+      class Iterateur{
+        public:
+          Iterateur(ArbreMap& a) : iter(a.entrees.debut()) {}
+          Iterateur(typename ArbreAVL<Entree>::Iterateur i) : iter(i) {}
+          operator bool() const {return iter.operator bool();};
+          Iterateur& operator++() {++iter; return *this;}
+          const K& cle() const {return (*iter).cle;}
+          V& valeur() {return (V&) (*iter).valeur;}
+        private:
+          typename ArbreAVL<Entree>::Iterateur iter;
+      };
 
-    void enlever(const K&);
-    void vider();
-    bool vide() const;
 
-    const V& operator[] (const K&) const;
-    V& operator[] (const K&);
+      Iterateur debut() {return Iterateur(*this);}
+      Iterateur fin() {return Iterateur(entrees.fin());}
+      Iterateur rechercher(const K& cle) {return Iterateur(entrees.rechercher(cle));}
+
+      bool contient(const K&) const;
+      void enlever(const K&);
+      void vider();
+      bool vide() const;
+
+      const V& operator[] (const K&) const;
+      V& operator[] (const K&);
 };
 
 
@@ -70,6 +86,7 @@ V& ArbreMap<K,V>::operator[] (const K& c)
 {
     typename ArbreAVL<Entree>::Iterateur iter = entrees.rechercher(c);
     if(!iter){
+        std::cout << "CALISSS" << std::endl;
       entrees.inserer(Entree(c));
       iter = entrees.rechercher(c);
     }
