@@ -72,10 +72,8 @@ int getOccurences(string mot, int index, ArbreMap<string, int> * foret){
 void prompt(){
     string input;
     cout << "Recherche : ";
-    getline(cin, input);
-    while(input != "exit"){
+    while(getline(cin, input) && input != "exit"){
         cout << "Recherche : ";
-        getline(cin, input);
     }
     cout << "Fin du programme." << endl;
 }
