@@ -3,15 +3,11 @@
 #include "Histoire.h"
 #include "arbreavl.h"
 #include "arbremap.h"
-
 #include <iomanip>
 #include <iostream>
 #include <string>
 #include <cctype>
-
-
 using namespace std;
-
 
 vector< Histoire *> * lireDocuments(string a_nomFichier);
 int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret);
@@ -41,7 +37,6 @@ int main() {
  * @return           [Le nombre d'histoires transferee]
  */
 int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret){
-
       vector<string>::const_iterator iter;
       int nbHistoires = 0;
       for( Histoire * histoire : * histoires ) {
@@ -66,11 +61,12 @@ int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * fore
  */
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret){
      ArbreMap<string, int> *sousArbre = &foret[index];
+     int nbOccurences = -1;
      if (sousArbre->contient(mot)){
        ArbreMap<string, int>::Iterateur it = sousArbre->rechercher(mot);
-       return it.valeur();
+       nbOccurences = it.valeur();
      }
-     return -1;
+     return nbOccurences;
 }
 
 void prompt(){
