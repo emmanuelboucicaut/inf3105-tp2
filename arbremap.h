@@ -86,7 +86,6 @@ V& ArbreMap<K,V>::operator[] (const K& c)
 {
     typename ArbreAVL<Entree>::Iterateur iter = entrees.rechercher(c);
     if(!iter){
-        std::cout << "CALISSS" << std::endl;
       entrees.inserer(Entree(c));
       iter = entrees.rechercher(c);
     }
