@@ -1,5 +1,5 @@
 COMPILER = g++
-FLAGS = -W -Wall
+FLAGS = -g
 CXXFLAGS = -std=c++11
 tp2: inf3105.o DocumentXML.o Histoire.o
 	$(COMPILER) $(CXXFLAGS) $(FLAGS) -o tp2 inf3105.o DocumentXML.o Histoire.o

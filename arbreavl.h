@@ -241,18 +241,6 @@ void ArbreAVL<T>::copier(const Noeud* source, Noeud*& noeud) const
         copier(source->droite, noeud->droite);
         copier(source->gauche, noeud->gauche);
       }
-      /**
-    if(source != NULL){
-        noeud = new Noeud(source->contenu);
-        noeud->equilibre = source->equilibre;
-        if(source->gauche != NULL){
-            copier(source->gauche, noeud->gauche);
-        }
-        if(source->droite != NULL){
-            copier(source->droite, noeud->droite);
-        }
-    }
-    **/
 }
 
 template <class T>
@@ -338,23 +326,23 @@ typename ArbreAVL<T>::Iterateur ArbreAVL<T>::rechercher(const T& e) const
     Iterateur iter(*this);
     Noeud * temp;
     if (racine != NULL){
-      temp = racine;
-      while (temp){
-        if (temp->contenu > e){
-            iter.chemin.empiler(temp);
-            temp = temp->gauche;
+        temp = racine;
+        while (temp){
+            if (temp->contenu > e){
+                iter.chemin.empiler(temp);
+                temp = temp->gauche;
+            }
+            else if (temp->contenu < e){
+                temp = temp->droite;
+            }
+            else {
+                iter.courant = temp;
+                return iter;
+            }
         }
-        else if (temp->contenu < e){
-          temp = temp->droite;
-        }
-        else {
-          iter.courant = temp;
-          return iter;
-        }
-      }
     }
-    iter.chemin.vider();
-    return iter;
+   iter.chemin.vider();
+   return iter;
 }
 
 template <class T>
@@ -416,7 +404,11 @@ template <class T>
 typename ArbreAVL<T>::Iterateur& ArbreAVL<T>::Iterateur::operator++()
 {
     if (courant->droite == NULL){
-     if (!chemin.vide()) courant = chemin.depiler();
+     if (!chemin.vide()){
+          courant = chemin.depiler();
+      }else{
+          courant = NULL;
+      }
    }
    else {
      courant = courant->droite;
