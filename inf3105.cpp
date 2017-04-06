@@ -2,6 +2,7 @@
 #include "DocumentXML.h"
 #include "Histoire.h"
 #include "arbreavl.h"
+#include "arbremap.h"
 
 #include <iomanip>
 #include <iostream>
@@ -20,22 +21,22 @@ int main() {
     vector<Histoire *> * histoires = lireDocuments(string("listeDocument.xml"));
     vector<string> mots;
     vector<string>::const_iterator iter;
-    ArbreAVL<string> *tabArbre = new ArbreAVL<string>[histoires->size()];
+    ArbreMap<string, int> *tabArbre = new ArbreMap<string, int>[histoires->size()];
 
     for( Histoire * histoire : * histoires ) {
-        //cout << ( * histoire ).titre() << endl << endl;
-        tabArbre[nbHistoires] = ArbreAVL<string>();
+        tabArbre[nbHistoires] = ArbreMap<string, int>();
         for(iter = histoire->begin(); iter != histoire->end(); ++iter){
             string temp = *iter;
             temp[0] = tolower(temp[0]);
-            tabArbre[nbHistoires].inserer(temp);
+            tabArbre[nbHistoires][temp]++;
         }
         ++nbHistoires;
     }
 
     for(int i = 0; i < nbHistoires; ++i){
-        ArbreAVL<string> temp = tabArbre[i];
-        cout << *temp.fin() << endl;
+        ArbreMap<string, int> *temp = &tabArbre[i];
+        ArbreMap<string, int>::Iterateur it = temp->fin();
+        cout << it.cle() << endl;
     }
     delete [] tabArbre;
 	return 0;
