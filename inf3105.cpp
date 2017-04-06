@@ -7,28 +7,48 @@
 #include <iostream>
 #include <string>
 #include <cctype>
+#include <cmath>
 using namespace std;
 
-vector< Histoire *> * lireDocuments(string a_nomFichier);
+void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret);
 int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret);
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret);
 void prompt();
+vector< Histoire *> * lireDocuments(string a_nomFichier);
 
 int main() {
     vector<Histoire *> *histoires = lireDocuments(string("listeDocument.xml"));
     ArbreMap<string, int> *foret = new ArbreMap<string, int>[histoires->size()];
-    int nbHistoires;
-    nbHistoires = histoiresToArbre(histoires, foret); // Permet de faire le transfert des mots des histoires dans leurs arbre respectif.
+    ArbreMap<string, double> *arbreIDF = new ArbreMap<string, double>();
+    int nbHistoires = histoiresToArbre(histoires, foret); // Permet de faire le transfert des mots des histoires dans leurs arbre respectif.
                                                       // Renvoie le nombre d'histoire
-    cout << "Occurences de The :" << getOccurences("ajajajajaj", 2, foret) << endl;
-    delete [] foret;
+    //cout << "Occurences de The :" << getOccurences("ajajajajaj", 2, foret) << endl;
+    calculerIDF(nbHistoires, arbreIDF, foret);
     prompt();
-	  return 0;
+    delete [] foret;
+    delete arbreIDF;
+
+	return 0;
 }
 
 /************************************************
  *                    FONCTIONS                 *
  ***********************************************/
+
+void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret){
+    ArbreMap<string, int> temp;
+    for(int i = 0; i < nbHistoires; ++i){
+        ArbreMap<string, int> *sousArbre = &foret[i];
+        for(ArbreMap<string, int>::Iterateur it = sousArbre->debut(); it; ++it){
+            temp[it.cle()]++;
+        }
+    }
+    for(ArbreMap<string, int>::Iterateur it = temp.debut(); it; ++it){
+        arbreIDF->operator[](it.cle())= log2(nbHistoires / it.valeur());
+    }
+
+}
+
 /**
  * [histoiresToArbre Fonction permettant de faire le transfert d'un vecteur
  * d'histoires a des arbres]
@@ -48,6 +68,7 @@ int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * fore
         }
         ++nbHistoires;
     }
+    return nbHistoires;
 }
 /**
  * [getOccurences Fonction retournant le nombre d'occurence d'un mot dans un sous arbre de foret]
@@ -61,6 +82,7 @@ int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * fore
  */
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret){
      ArbreMap<string, int> *sousArbre = &foret[index];
+     ArbreMap<string, int>::Iterateur iter = sousArbre->debut();
      int nbOccurences = -1;
      if (sousArbre->contient(mot)){
        ArbreMap<string, int>::Iterateur it = sousArbre->rechercher(mot);
@@ -75,7 +97,7 @@ void prompt(){
     while(getline(cin, input) && input != "exit"){
         cout << "Recherche : ";
     }
-    cout << "Fin du programme." << endl;
+    cout << endl << "Fin du programme." << endl;
 }
 
 vector< Histoire *> * lireDocuments( string a_nomFichier) {
