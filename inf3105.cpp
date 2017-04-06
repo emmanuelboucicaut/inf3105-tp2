@@ -16,6 +16,7 @@ using namespace std;
 vector< Histoire *> * lireDocuments(string a_nomFichier);
 int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret);
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret);
+void prompt();
 
 int main() {
     vector<Histoire *> *histoires = lireDocuments(string("listeDocument.xml"));
@@ -25,6 +26,7 @@ int main() {
                                                       // Renvoie le nombre d'histoire
     cout << "Occurences de The :" << getOccurences("the", 2, foret) << endl;
     delete [] foret;
+    prompt();
 	  return 0;
 }
 
@@ -64,20 +66,20 @@ int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * fore
  */
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret){
      ArbreMap<string, int> *sousArbre = &foret[index];
-     ArbreMap<string, int>::Iterateur it = sousArbre->rechercher("the");
+     ArbreMap<string, int>::Iterateur it = sousArbre->rechercher("allo");
      return it.valeur();
 }
 
-
-
-
-
-
-
-
-
-
-
+void prompt(){
+    string input;
+    cout << "Recherche : ";
+    getline(cin, input);
+    while(input != "exit"){
+        cout << "Recherche : ";
+        getline(cin, input);
+    }
+    cout << "Fin du programme." << endl;
+}
 
 vector< Histoire *> * lireDocuments( string a_nomFichier) {
     vector<Histoire *> * histoires = new vector< Histoire * >();
