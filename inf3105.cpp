@@ -24,7 +24,7 @@ int main() {
     int nbHistoires;
     nbHistoires = histoiresToArbre(histoires, foret); // Permet de faire le transfert des mots des histoires dans leurs arbre respectif.
                                                       // Renvoie le nombre d'histoire
-    cout << "Occurences de The :" << getOccurences("the", 2, foret) << endl;
+    cout << "Occurences de The :" << getOccurences("ajajajajaj", 2, foret) << endl;
     delete [] foret;
     prompt();
 	  return 0;
@@ -66,8 +66,11 @@ int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * fore
  */
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret){
      ArbreMap<string, int> *sousArbre = &foret[index];
-     ArbreMap<string, int>::Iterateur it = sousArbre->rechercher("allo");
-     return it.valeur();
+     if (sousArbre->contient(mot)){
+       ArbreMap<string, int>::Iterateur it = sousArbre->rechercher(mot);
+       return it.valeur();
+     }
+     return -1;
 }
 
 void prompt(){
