@@ -336,26 +336,24 @@ template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::rechercher(const T& e) const
 {
     Iterateur iter(*this);
-    iter.courant = iter.arbre_associe.racine;
-    while(iter){
-        if(iter.courant->contenu == e){
-            return iter;
-        }else if(e < iter.courant->contenu){
-            if(iter.courant->gauche != NULL){
-                iter.chemin.empiler(iter.courant);
-                iter.courant = iter.courant->gauche;
-            }else{
-                return iter;
-            }
-        }else if(e > iter.courant->contenu){
-            if(iter.courant->droite != NULL){
-                iter.chemin.empiler(iter.courant);
-                iter.courant = iter.courant->droite;
-            }else{
-                return iter;
-            }
+    Noeud * temp;
+    if (racine != NULL){
+      temp = racine;
+      while (temp){
+        if (temp->contenu > e){
+            iter.chemin.empiler(temp);
+            temp = temp->gauche;
         }
+        else if (temp->contenu < e){
+          temp = temp->droite;
+        }
+        else {
+          iter.courant = temp;
+          return iter;
+        }
+      }
     }
+    iter.chemin.vider();
     return iter;
 }
 
@@ -429,30 +427,6 @@ typename ArbreAVL<T>::Iterateur& ArbreAVL<T>::Iterateur::operator++()
    }
    return *this;
 }
-/**
-    T temp;
-    temp = this->courant->contenu;
-
-    if(this->courant->droite == NULL){
-
-        while(this->courant->contenu <= temp){
-            if(!this->chemin.vide()){
-                this->courant = this->chemin.depiler();
-            }
-        }
-    }else if(this->courant->droite != NULL){
-
-            this->chemin.empiler(this->courant);
-            this->courant = this->courant->droite;
-            while(this->courant->gauche != NULL){
-                this->chemin.empiler(this->courant);
-                this->courant = this->courant->gauche;
-            }
-    }
-
-    return *this;
-}
-**/
 // Post-incrément
 template <class T>
 typename ArbreAVL<T>::Iterateur ArbreAVL<T>::Iterateur::operator++(int)
