@@ -10,8 +10,9 @@
 #include <cmath>
 using namespace std;
 
+void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, Pile<string> *mots, int nbHistoires);
 void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret);
-int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret);
+int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret, ArbreMap<string, int> *titres);
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret);
 void prompt();
 vector< Histoire *> * lireDocuments(string a_nomFichier);
@@ -20,10 +21,16 @@ int main() {
     vector<Histoire *> *histoires = lireDocuments(string("listeDocument.xml"));
     ArbreMap<string, int> *foret = new ArbreMap<string, int>[histoires->size()];
     ArbreMap<string, double> *arbreIDF = new ArbreMap<string, double>();
-    int nbHistoires = histoiresToArbre(histoires, foret); // Permet de faire le transfert des mots des histoires dans leurs arbre respectif.
-                                                      // Renvoie le nombre d'histoire
-    //cout << "Occurences de The :" << getOccurences("ajajajajaj", 2, foret) << endl;
+    ArbreMap<string, int> *titres = new ArbreMap<string, int>();
+    int nbHistoires = histoiresToArbre(histoires, foret, titres);
+
+    //cout << "Occurences TEST :" << getOccurences("brain", 1, foret) << endl;
     calculerIDF(nbHistoires, arbreIDF, foret);
+
+    Pile<string> test;
+    test.empiler("space");
+    calculRequete(arbreIDF, foret, &test, nbHistoires);
+
     prompt();
     delete [] foret;
     delete arbreIDF;
@@ -34,6 +41,38 @@ int main() {
 /************************************************
  *                    FONCTIONS                 *
  ***********************************************/
+void rechercherTitre(){
+
+}
+
+void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, Pile<string> *mots, int nbHistoires){
+    string mot;
+    string titre;
+    while(!mots->vide()){
+        double somme = 0;
+        int tf = 0;
+        double idf;
+        mot = mots->depiler();
+        /**
+        ArbreMap<string, double>::Iterateur iter = arbreIDF->rechercher(mot);
+        cout << iter.cle() << " : " << iter.valeur() << endl;
+        for(iter = arbreIDF->debut(); iter; ++iter){
+            cout << iter.cle() << " : " << iter.valeur() << endl;
+            if(iter.cle() == "sore") exit(0);
+        }
+        exit(0);
+        **/
+        idf = arbreIDF->operator[](mot);
+        for(int index = 0; index < nbHistoires; ++index){
+            tf = getOccurences(mot, index, foret);
+            if( (tf * idf) >= somme){
+                //titre = foret[index].titre()
+                somme = tf * idf;
+                cout << somme << " : " << "TITRE ICI" << endl;
+            }
+        }
+    }
+}
 
 void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret){
     ArbreMap<string, int> temp;
@@ -44,7 +83,7 @@ void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<s
         }
     }
     for(ArbreMap<string, int>::Iterateur it = temp.debut(); it; ++it){
-        arbreIDF->operator[](it.cle())= log2(nbHistoires / it.valeur());
+        arbreIDF->operator[](it.cle()) = log2((double)nbHistoires / it.valeur());
     }
 
 }
@@ -56,10 +95,13 @@ void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<s
  * @param  foret     [Arbre dans lequel on y mettra d'autres arbres contenant les mots]
  * @return           [Le nombre d'histoires transferee]
  */
-int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret){
+int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> *foret, ArbreMap<string, int> *titres){
       vector<string>::const_iterator iter;
       int nbHistoires = 0;
+      int indexe = 0;
       for( Histoire * histoire : * histoires ) {
+        titres->operator[](histoire->titre()) = indexe;
+        ++indexe;
         foret[nbHistoires] = ArbreMap<string, int>();
         for(iter = histoire->begin(); iter != histoire->end(); ++iter){
             string temp = *iter;
