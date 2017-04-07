@@ -10,9 +10,9 @@
 #include <cmath>
 using namespace std;
 ///salut mon Étienne.
-void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, Pile<string> *mots, int nbHistoires);
+void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres, Pile<string> *mots, int nbHistoires);
 void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret);
-int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret, ArbreMap<string, int> *titres);
+int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret, ArbreMap<int, string> *titres);
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret);
 void prompt();
 vector< Histoire *> * lireDocuments(string a_nomFichier);
@@ -21,10 +21,10 @@ int main() {
     vector<Histoire *> *histoires = lireDocuments(string("listeDocument.xml"));
     ArbreMap<string, int> *foret = new ArbreMap<string, int>[histoires->size()];
     ArbreMap<string, double> *arbreIDF = new ArbreMap<string, double>();
-    ArbreMap<string, int> *titres = new ArbreMap<string, int>();     //Il est pertinant d'avoir un Tree Map [titres:indexe] car il faut garder trace des titres pour le output.
+    ArbreMap<int, string> *titres = new ArbreMap<int, string>();     //Il est pertinant d'avoir un Tree Map [indexe:titre] car il faut garder trace des titres pour le output.
                                                                     // je le créer dans 'histoiresToArbre'...juste besoin d'itérer une fois dans histoire yessssssssss.
                                                                     //Good ole' tree map.
-                                                                    //Gimme some apple you fuckin tree
+                                                                    //Gimme some apples you fuckin tree
                                                                     //its getting late jme trouve drole ak mes comments
     int nbHistoires = histoiresToArbre(histoires, foret, titres);
 
@@ -34,7 +34,7 @@ int main() {
     Pile<string> test;
     test.empiler("space");           ////j'ai créé une pile parce j'aime bin ça les piles...Structure pour stocker mes string de test pour les calculs...
                                         ///je propose qu'on mette les string séparées de l'utilisateur dans une Pile également...Si t'es d'accord
-    calculRequete(arbreIDF, foret, &test, nbHistoires);
+    calculRequete(arbreIDF, foret, titres, &test, nbHistoires);
 
     prompt();
     delete [] foret;
@@ -47,9 +47,10 @@ int main() {
  *                    FONCTIONS                 *
  ***********************************************/
 
-///////////Elle est fonctionnelle et semble bien fonctionner...sauf que certains résultats sont différents de ceux du prof...je dois continuer de vérifier pourquoi.
+//Elle est fonctionnelle et semble bien fonctionner...sauf que certains résultats sont différents de ceux du prof...je dois continuer de vérifier pourquoi.
 //affiche pas encore les 5 résultats...j'affiche juste les mises a jours de somme. Which is alright for debugging soo leave it that way plzzzzz.
-void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, Pile<string> *mots, int nbHistoires){
+//permet juste de calculer uen requete avec UN SEUL MOT.
+void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres, Pile<string> *mots, int nbHistoires){
     string mot;
     string titre;
     while(!mots->vide()){
@@ -63,7 +64,7 @@ void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *fo
             if( (tf * idf) >= somme){
                 //titre = foret[index].titre()
                 somme = tf * idf;
-                cout << somme << " : " << "TITRE ICI" << endl;
+                cout << somme << " : " << titres->operator[](index) << endl;
             }
         }
     }
@@ -90,12 +91,12 @@ void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<s
  * @param  foret     [Arbre dans lequel on y mettra d'autres arbres contenant les mots]
  * @return           [Le nombre d'histoires transferee]
  */
-int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> *foret, ArbreMap<string, int> *titres){
+int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres){
       vector<string>::const_iterator iter;
       int nbHistoires = 0;
       int indexe = 0;
       for( Histoire * histoire : * histoires ) {
-        titres->operator[](histoire->titre()) = indexe;
+        titres->operator[](indexe) = histoire->titre();
         ++indexe;
         foret[nbHistoires] = ArbreMap<string, int>();
         for(iter = histoire->begin(); iter != histoire->end(); ++iter){
