@@ -9,7 +9,7 @@
 #include <cctype>
 #include <cmath>
 using namespace std;
-
+///salut mon Étienne.
 void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, Pile<string> *mots, int nbHistoires);
 void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret);
 int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret, ArbreMap<string, int> *titres);
@@ -21,14 +21,19 @@ int main() {
     vector<Histoire *> *histoires = lireDocuments(string("listeDocument.xml"));
     ArbreMap<string, int> *foret = new ArbreMap<string, int>[histoires->size()];
     ArbreMap<string, double> *arbreIDF = new ArbreMap<string, double>();
-    ArbreMap<string, int> *titres = new ArbreMap<string, int>();
+    ArbreMap<string, int> *titres = new ArbreMap<string, int>();     //Il est pertinant d'avoir un Tree Map [titres:indexe] car il faut garder trace des titres pour le output.
+                                                                    // je le créer dans 'histoiresToArbre'...juste besoin d'itérer une fois dans histoire yessssssssss.
+                                                                    //Good ole' tree map.
+                                                                    //Gimme some apple you fuckin tree
+                                                                    //its getting late jme trouve drole ak mes comments
     int nbHistoires = histoiresToArbre(histoires, foret, titres);
 
     //cout << "Occurences TEST :" << getOccurences("brain", 1, foret) << endl;
     calculerIDF(nbHistoires, arbreIDF, foret);
 
     Pile<string> test;
-    test.empiler("space");
+    test.empiler("space");           ////j'ai créé une pile parce j'aime bin ça les piles...Structure pour stocker mes string de test pour les calculs...
+                                        ///je propose qu'on mette les string séparées de l'utilisateur dans une Pile également...Si t'es d'accord
     calculRequete(arbreIDF, foret, &test, nbHistoires);
 
     prompt();
@@ -41,10 +46,9 @@ int main() {
 /************************************************
  *                    FONCTIONS                 *
  ***********************************************/
-void rechercherTitre(){
 
-}
-
+///////////Elle est fonctionnelle et semble bien fonctionner...sauf que certains résultats sont différents de ceux du prof...je dois continuer de vérifier pourquoi.
+//affiche pas encore les 5 résultats...j'affiche juste les mises a jours de somme. Which is alright for debugging soo leave it that way plzzzzz.
 void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, Pile<string> *mots, int nbHistoires){
     string mot;
     string titre;
@@ -53,15 +57,6 @@ void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *fo
         int tf = 0;
         double idf;
         mot = mots->depiler();
-        /**
-        ArbreMap<string, double>::Iterateur iter = arbreIDF->rechercher(mot);
-        cout << iter.cle() << " : " << iter.valeur() << endl;
-        for(iter = arbreIDF->debut(); iter; ++iter){
-            cout << iter.cle() << " : " << iter.valeur() << endl;
-            if(iter.cle() == "sore") exit(0);
-        }
-        exit(0);
-        **/
         idf = arbreIDF->operator[](mot);
         for(int index = 0; index < nbHistoires; ++index){
             tf = getOccurences(mot, index, foret);
