@@ -7,14 +7,16 @@
 #include <iostream>
 #include <string>
 #include <cctype>
+#include <algorithm>
 #include <cmath>
 using namespace std;
 ///salut mon Étienne.
-void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres, Pile<string> *mots, int nbHistoires);
+void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres, vector<string> *mots, int nbHistoires, int nombreDeFois);
 void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret);
 int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret, ArbreMap<int, string> *titres);
 int getOccurences(string mot, int index, ArbreMap<string, int> * foret);
-void prompt();
+int prompt(vector<string> *pile);
+void afficherPlusGrand(ArbreMap<string, double> *fin, int nombreDeFois);
 vector< Histoire *> * lireDocuments(string a_nomFichier);
 
 int main() {
@@ -27,22 +29,37 @@ int main() {
                                                                     //Gimme some apples you fuckin tree
                                                                     //its getting late jme trouve drole ak mes comments
     int nbHistoires = histoiresToArbre(histoires, foret, titres);
-
-    //cout << "Occurences TEST :" << getOccurences("brain", 1, foret) << endl;
     calculerIDF(nbHistoires, arbreIDF, foret);
-
-    Pile<string> test;
-    test.empiler("space");           ////j'ai créé une pile parce j'aime bin ça les piles...Structure pour stocker mes string de test pour les calculs...
-                                        ///je propose qu'on mette les string séparées de l'utilisateur dans une Pile également...Si t'es d'accord
-    calculRequete(arbreIDF, foret, titres, &test, nbHistoires);
-
-    prompt();
+    vector<string> test;
+    while (prompt(&test)){
+      calculRequete(arbreIDF, foret, titres, &test, nbHistoires, 5);
+    }
     delete [] foret;
     delete arbreIDF;
 
 	return 0;
 }
 
+
+
+void afficherPlusGrand(ArbreMap<string, double> * fin, int nombreDeFois){
+     double max = 0, maxAbs = 0;
+     string str;
+     for (int i = 0 ; i < nombreDeFois; ++i){
+         for (ArbreMap<string,double>::Iterateur iter = fin->debut(); iter ; ++iter){
+           if (iter.valeur() > max && i == 0){
+               max = iter.valeur();
+               str = iter.cle();
+           } else if (iter.valeur() > max && iter.valeur() < maxAbs){
+               max = iter.valeur();
+               str = iter.cle();
+           }
+         }
+         if (max != 0) cout << max << " : " << str << endl;
+         maxAbs = max;
+         max = 0;
+    }
+}
 /************************************************
  *                    FONCTIONS                 *
  ***********************************************/
@@ -50,26 +67,31 @@ int main() {
 //Elle est fonctionnelle et semble bien fonctionner...sauf que certains résultats sont différents de ceux du prof...je dois continuer de vérifier pourquoi.
 //affiche pas encore les 5 résultats...j'affiche juste les mises a jours de somme. Which is alright for debugging soo leave it that way plzzzzz.
 //permet juste de calculer uen requete avec UN SEUL MOT.
-void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres, Pile<string> *mots, int nbHistoires){
+void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres, vector <string> *mots, int nbHistoires, int nombreDeFois){
     string mot;
     string titre;
-    while(!mots->vide()){
-        double somme = 0;
-        int tf = 0;
-        double idf;
-        mot = mots->depiler();
-        idf = arbreIDF->operator[](mot);
-        for(int index = 0; index < nbHistoires; ++index){
-            tf = getOccurences(mot, index, foret);
-            if( (tf * idf) >= somme){
-                //titre = foret[index].titre()
-                somme = tf * idf;
-                cout << somme << " : " << titres->operator[](index) << endl;
-            }
-        }
+    ArbreMap<string, double> temp;
+    double idf = 0, total = 0;
+    int tf = 0;
+    for (int i = 0; i < nbHistoires; ++i){
+      for (int y = 0; y < mots->size(); ++y){
+          idf = arbreIDF->operator[]((*mots)[y]);
+          tf = getOccurences((*mots)[y], i, foret);
+          total += idf * tf;
+      }
+     // cout << total << " : " << titres->operator[](i) << endl;
+      temp[titres->operator[](i)] = total;
+      total = 0;
     }
+    afficherPlusGrand(&temp, nombreDeFois);
+    mots->clear();
 }
-
+/**
+ * [calculerIDF description]
+ * @param nbHistoires [description]
+ * @param arbreIDF    [description]
+ * @param foret       [description]
+ */
 void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret){
     ArbreMap<string, int> temp;
     for(int i = 0; i < nbHistoires; ++i){
@@ -81,7 +103,6 @@ void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<s
     for(ArbreMap<string, int>::Iterateur it = temp.debut(); it; ++it){
         arbreIDF->operator[](it.cle()) = log2((double)nbHistoires / it.valeur());
     }
-
 }
 
 /**
@@ -122,22 +143,39 @@ int getOccurences(string mot, int index, ArbreMap<string, int> * foret){
      ArbreMap<string, int> *sousArbre = &foret[index];
      ArbreMap<string, int>::Iterateur iter = sousArbre->debut();
      int nbOccurences = -1;
-     if (sousArbre->contient(mot)){
+     if (sousArbre->contient(mot)) {
        ArbreMap<string, int>::Iterateur it = sousArbre->rechercher(mot);
        nbOccurences = it.valeur();
-     }
+      }
      return nbOccurences;
 }
+/**
+ * [prompt Prend une pile de string a remplir en parametre]
+ * @param  mots [Pile de Strings]
+ * @return      [Renvoie 0 si la pile est vide, 1 sinon]
+ */
+int prompt(vector<string> *mots){
+  string temp;
+  string sousChaine;
+  int fin;
+  cout << "requete : ";
+  if (getline(cin, temp) && temp.length() > 0){
+       for(int i = 0; i < temp.length(); ++i){
+         if (isalpha(temp.at(i)) || temp.at(i) == '-'){
+           sousChaine += temp.at(i);
+         } else if (!sousChaine.empty()){
+           mots->push_back(sousChaine);
+           sousChaine.clear();
+         }
+       }
+       mots->push_back(sousChaine);
 
-void prompt(){
-    string input;
-    cout << "Recherche : ";
-    while(getline(cin, input) && input != "exit"){
-        cout << "Recherche : ";
-    }
-    cout << endl << "Fin du programme." << endl;
+  }
+  return (!mots->empty());
 }
-
+/**
+ * Fonctions fournies pas le professeur
+ */
 vector< Histoire *> * lireDocuments( string a_nomFichier) {
     vector<Histoire *> * histoires = new vector< Histoire * >();
     DocumentXML * listeFichiers = lireFichierXML( a_nomFichier );
