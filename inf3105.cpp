@@ -162,7 +162,7 @@ int prompt(vector<string> *mots){
   if (getline(cin, temp) && temp.length() > 0){
        for(int i = 0; i < temp.length(); ++i){
          if (isalpha(temp.at(i)) || temp.at(i) == '-'){
-           sousChaine += temp.at(i);
+           sousChaine += tolower(temp.at(i));
          } else if (!sousChaine.empty()){
            mots->push_back(sousChaine);
            sousChaine.clear();
