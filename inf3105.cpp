@@ -11,6 +11,18 @@
 #include <cmath>
 using namespace std;
 ///salut mon Étienne.
+
+typedef struct Node{
+    double valeur;
+    string cle;
+} Node;
+bool commentTrier(Node a, Node b) {
+  bool trie;
+  trie = a.valeur > b.valeur;
+  return trie;
+}
+
+
 void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret, ArbreMap<int, string> *titres, vector<string> *mots, int nbHistoires, int nombreDeFois);
 void calculerIDF(int nbHistoires, ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *foret);
 int histoiresToArbre(vector<Histoire *> *histoires, ArbreMap<string, int> * foret, ArbreMap<int, string> *titres);
@@ -19,7 +31,7 @@ int prompt(vector<string> *pile);
 void afficherPlusGrand(ArbreMap<string, double> *fin, int nombreDeFois);
 vector< Histoire *> * lireDocuments(string a_nomFichier);
 
-int main() {
+int main()  {
     vector<Histoire *> *histoires = lireDocuments(string("listeDocument.xml"));
     ArbreMap<string, int> *foret = new ArbreMap<string, int>[histoires->size()];
     ArbreMap<string, double> *arbreIDF = new ArbreMap<string, double>();
@@ -32,7 +44,7 @@ int main() {
     calculerIDF(nbHistoires, arbreIDF, foret);
     vector<string> test;
     while (prompt(&test)){
-      calculRequete(arbreIDF, foret, titres, &test, nbHistoires, 5);
+      calculRequete(arbreIDF, foret, titres, &test, nbHistoires, 7);
     }
     delete [] foret;
     delete arbreIDF;
@@ -42,24 +54,19 @@ int main() {
 
 
 
-void afficherPlusGrand(ArbreMap<string, double> * fin, int nombreDeFois){
-     double max = 0, maxAbs = 0;
-     string str;
-     for (int i = 0 ; i < nombreDeFois; ++i){
-         for (ArbreMap<string,double>::Iterateur iter = fin->debut(); iter ; ++iter){
-           if (iter.valeur() > max && i == 0){
-               max = iter.valeur();
-               str = iter.cle();
-           } else if (iter.valeur() > max && iter.valeur() < maxAbs){
-               max = iter.valeur();
-               str = iter.cle();
-           }
+void afficherPlusGrand(ArbreMap<string, double> * metrique, int nombreDeFois){
+     vector <Node> resultat;
+     string str, maxStr;
+     for (ArbreMap<string,double>::Iterateur iter = metrique->debut(); iter ; ++iter){
+          Node temp;
+          temp.valeur = iter.valeur();
+          temp.cle = iter.cle();
+          resultat.push_back(temp);
+     }
+     sort(resultat.begin(), resultat.end(), commentTrier);
+     for (int i = 0 ; i < nombreDeFois; ++i)
+          cout << resultat[i].cle << " : " << resultat[i].valeur << endl;
          }
-         if (max != 0) cout << max << " : " << str << endl;
-         maxAbs = max;
-         max = 0;
-    }
-}
 /************************************************
  *                    FONCTIONS                 *
  ***********************************************/
@@ -80,9 +87,12 @@ void calculRequete(ArbreMap<string, double> *arbreIDF, ArbreMap<string, int> *fo
           total += idf * tf;
       }
      // cout << total << " : " << titres->operator[](i) << endl;
+      //if (total > 0) {
       temp[titres->operator[](i)] = total;
+      //}
       total = 0;
     }
+    if (temp.vide()) exit(0);
     afficherPlusGrand(&temp, nombreDeFois);
     mots->clear();
 }
