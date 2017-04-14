@@ -82,7 +82,7 @@ void afficherPlusGrand(ArbreMap<string, double> * metrique, int nombreDeFois){
         }
         sort(resultat.begin(), resultat.end(), commentTrier);
         for (int i = 0; i < nombreDeFois; ++i)
-                cout << resultat[i].cle << " : " << resultat[i].valeur << endl;
+                cout << resultat[i].valeur << " : " << resultat[i].cle << endl;
 }
 /**
  * [calculRequete  Fonction plus ou moins principale du TP. Calcule l'IDF des mots passes en parametre]
